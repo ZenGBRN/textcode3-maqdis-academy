@@ -1,24 +1,819 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Product List</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hefalan - Aplikasi Hafalan Quran</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #FF7F32; /* Orange */
+            --primary-light: #FFA366;
+            --primary-dark: #E55A00;
+            --secondary: #F5F5F5; /* Light gray */
+            --accent: #FFFFFF; /* White */
+            --text: #333333;
+            --text-light: #666666;
+            --card-bg: #FFFFFF;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --sidebar-width: 250px;
+        }
+
+        body {
+            background-color: var(--secondary);
+            color: var(--text);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar for desktop */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 20px 0;
+            height: 100vh;
+            position: fixed;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .logo {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .logo i {
+            font-size: 28px;
+        }
+
+        .nav-section {
+            margin-bottom: 30px;
+        }
+
+        .nav-title {
+            font-size: 14px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 0 20px 10px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .nav-items {
+            list-style: none;
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 15px;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.15);
+            border-left: 4px solid white;
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main content area */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            transition: margin-left 0.3s ease;
+        }
+
+        /* Top header */
+        .top-header {
+            background-color: var(--accent);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        .greeting-section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .greeting {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logout-btn {
+            background: var(--primary);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Content area */
+        .content {
+            padding: 30px;
+            max-width: 1200px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .card-action {
+            color: var(--primary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .progress-container {
+            margin-bottom: 20px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary);
+            border-radius: 4px;
+            width: 65%; /* Progress percentage */
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            flex: 1;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .verse-section {
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+            grid-column: 1 / -1;
+        }
+
+        .verse-arabic {
+            font-size: 28px;
+            margin-bottom: 15px;
+            line-height: 1.8;
+            font-family: 'Traditional Arabic', serif;
+        }
+
+        .verse-translation {
+            font-size: 16px;
+            margin-bottom: 15px;
+            font-style: italic;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .verse-info {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .programs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .program-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .program-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .program-icon {
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: white;
+            font-size: 24px;
+        }
+
+        .program-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .program-duration {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .feature-card {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background-color: var(--secondary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .feature-text {
+            flex: 1;
+        }
+
+        .feature-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .feature-desc {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        footer {
+            background-color: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            border-radius: 15px 15px 0 0;
+        }
+
+        /* Mobile navigation */
+        .mobile-nav {
+            display: none;
+            background-color: var(--accent);
+            padding: 15px;
+            justify-content: space-around;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .mobile-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .mobile-nav-item.active {
+            color: var(--primary);
+        }
+
+        .mobile-nav-item i {
+            font-size: 20px;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            .mobile-nav {
+                display: flex;
+            }
+            
+            .content {
+                padding-bottom: 80px; /* Space for mobile nav */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .verse-arabic {
+                font-size: 24px;
+            }
+            
+            .programs-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .top-header {
+                padding: 15px 20px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .verse-section {
+                padding: 20px;
+            }
+            
+            .verse-arabic {
+                font-size: 20px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .feature-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <header class="navbar">
-    <h1 class="logo">Hamim Store</h1>
-  </header>
+    <!-- Sidebar for desktop -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fas fa-book-quran"></i>
+            <h1>Hefalan</h1>
+        </div>
+        
+        <div class="nav-section">
+            <div class="nav-title">Menu Utama</div>
+            <ul class="nav-items">
+                <li class="nav-item active">
+                    <i class="fas fa-home"></i>
+                    <span>Beranda</span>
+                </li>
+                <li class="nav-item">
+                    <i class="fas fa-book-open"></i>
+                    <span>Portrajdat</span>
+                </li>
+                <li class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Pengukuran</span>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="nav-section">
+            <div class="nav-title">Program Hafalan</div>
+            <ul class="nav-items">
+                <li class="nav-item">
+                    <i class="fas fa-moon"></i>
+                    <span>Al-Muzzammil (10 Hari)</span>
+                </li>
+                <li class="nav-item">
+                    <i class="fas fa-crown"></i>
+                    <span>Al-Mulk (30 Hari)</span>
+                </li>
+                <li class="nav-item">
+                    <i class="fas fa-star"></i>
+                    <span>Juz Amma (60 Hari)</span>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="nav-section">
+            <div class="nav-title">Pengaturan</div>
+            <ul class="nav-items">
+                <li class="nav-item">
+                    <i class="fas fa-user"></i>
+                    <span>Profil</span>
+                </li>
+                <li class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Pengaturan</span>
+                </li>
+                <li class="nav-item">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Bantuan</span>
+                </li>
+            </ul>
+        </div>
+    </div>
 
-  <main class="container">
-    <h2>Daftar Produk</h2>
-    <div id="product-list" class="product-grid"></div>
-  </main>
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-header">
+            <button class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="greeting-section">
+                <div class="greeting">Assalamu'alaikum Gibran</div>
+                <div class="subtitle">Apa yang ingin Anda hafalkan hari ini?</div>
+            </div>
+            <div class="user-actions">
+                <button class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Keluar
+                </button>
+            </div>
+        </div>
 
-  <script src="script.js"></script>
-  <script>
-    renderProductList(); // tampilkan daftar produk
-  </script>
+        <div class="content">
+            <div class="stats-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Runtutan Kamu</div>
+                        <div class="card-action">Lihat Detail</div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-info">
+                            <span>Hari 8 dari 30</span>
+                            <span>65%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+                    </div>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <div class="stat-value">8 hari</div>
+                            <div class="stat-label">streak hari</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">1:20:25</div>
+                            <div class="stat-label">Waktu Hafalan</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Pencapaian</div>
+                        <div class="card-action">Lihat Semua</div>
+                    </div>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <div class="stat-value">42</div>
+                            <div class="stat-label">Ayat Terhafal</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">16</div>
+                            <div class="stat-label">Hari Berturut</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">8</div>
+                            <div class="stat-label">Surah Dikuasai</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="verse-section">
+                    <div class="verse-arabic">قُلْ أَعُوذُ بِرَبِّ النَّاسِ</div>
+                    <div class="verse-translation">Katakanlah: "Aku berlindung kepada Tuhan (yang memelihara dan menguasai) manusia."</div>
+                    <div class="verse-info">Hari 8 : Ayat 16-20 | Surah An-Nas</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Program Hafalan</div>
+                    <div class="card-action">Lihat Semua</div>
+                </div>
+                <div class="programs-grid">
+                    <div class="program-card">
+                        <div class="program-icon">
+                            <i class="fas fa-moon"></i>
+                        </div>
+                        <div class="program-title">10 Hari Hafal Al-Muzzammil</div>
+                        <div class="program-duration">Program Singkat</div>
+                    </div>
+                    <div class="program-card">
+                        <div class="program-icon">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <div class="program-title">30 Hari Hafal Al-Mulk</div>
+                        <div class="program-duration">Program Menengah</div>
+                    </div>
+                    <div class="program-card">
+                        <div class="program-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="program-title">60 Hari Hafal Juz Amma</div>
+                        <div class="program-duration">Program Lengkap</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Fitur Unggulan</div>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <div class="feature-text">
+                            <div class="feature-title">Irama yang Menyenangkan</div>
+                            <div class="feature-desc">Makin betah baca Al-Quran dengan irama yang mudah diikuti</div>
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-laptop"></i>
+                        </div>
+                        <div class="feature-text">
+                            <div class="feature-title">Belajar Online</div>
+                            <div class="feature-desc">Akses materi hafalan dimanapun dan kapanpun</div>
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div class="feature-text">
+                            <div class="feature-title">Pelacakan Progress</div>
+                            <div class="feature-desc">Pantau perkembangan hafalan dengan statistik detail</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer>
+                <p>Hefalan &copy; 2023 - Semua hak dilindungi. Aplikasi penghafal Quran modern</p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav">
+        <div class="mobile-nav-item active">
+            <i class="fas fa-home"></i>
+            <span>Beranda</span>
+        </div>
+        <div class="mobile-nav-item">
+            <i class="fas fa-book-open"></i>
+            <span>Hafalan</span>
+        </div>
+        <div class="mobile-nav-item">
+            <i class="fas fa-chart-line"></i>
+            <span>Progress</span>
+        </div>
+        <div class="mobile-nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profil</span>
+        </div>
+    </div>
+
+    <script>
+        // Toggle sidebar on mobile
+        const menuToggle = document.querySelector('.menu-toggle');
+        const sidebar = document.querySelector('.sidebar');
+        
+        menuToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('active');
+        });
+
+        // Navigation functionality
+        const navItems = document.querySelectorAll('.nav-item');
+        const mobileNavItems = document.querySelectorAll('.mobile-nav-item');
+        
+        navItems.forEach(item => {
+            item.addEventListener('click', function() {
+                navItems.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Close sidebar on mobile after selection
+                if (window.innerWidth <= 1024) {
+                    sidebar.classList.remove('active');
+                }
+            });
+        });
+        
+        mobileNavItems.forEach(item => {
+            item.addEventListener('click', function() {
+                mobileNavItems.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Program card interaction
+        const programCards = document.querySelectorAll('.program-card');
+        programCards.forEach(card => {
+            card.addEventListener('click', function() {
+                alert('Program dipilih: ' + this.querySelector('.program-title').textContent);
+            });
+        });
+
+        // Logout button functionality
+        document.querySelector('.logout-btn').addEventListener('click', function() {
+            if(confirm('Apakah Anda yakin ingin keluar?')) {
+                alert('Anda telah keluar dari aplikasi');
+            }
+        });
+
+        // Simulate daily verse change
+        const verses = [
+            {
+                arabic: "قُلْ أَعُوذُ بِرَبِّ النَّاسِ",
+                translation: 'Katakanlah: "Aku berlindung kepada Tuhan (yang memelihara dan menguasai) manusia."',
+                info: "Hari 8 : Ayat 16-20 | Surah An-Nas"
+            },
+            {
+                arabic: "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ",
+                translation: 'Segala puji bagi Allah, Tuhan semesta alam.',
+                info: "Hari 9 : Ayat 1-5 | Surah Al-Fatihah"
+            },
+            {
+                arabic: "اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ",
+                translation: 'Tunjukilah kami jalan yang lurus.',
+                info: "Hari 10 : Ayat 6-7 | Surah Al-Fatihah"
+            }
+        ];
+
+        let currentVerse = 0;
+        
+        // Change verse every 10 seconds (for demo purposes)
+        setInterval(() => {
+            currentVerse = (currentVerse + 1) % verses.length;
+            document.querySelector('.verse-arabic').textContent = verses[currentVerse].arabic;
+            document.querySelector('.verse-translation').textContent = verses[currentVerse].translation;
+            document.querySelector('.verse-info').textContent = verses[currentVerse].info;
+        }, 10000);
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            if (window.innerWidth <= 1024 && 
+                !sidebar.contains(event.target) && 
+                !menuToggle.contains(event.target) &&
+                sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+            }
+        });
+    </script>
 </body>
 </html>
